@@ -43,9 +43,7 @@ class FileProcessor:
         size = path.stat().st_size
 
         if size > self.max_file_size:
-            raise ValueError(
-                f"File exceeds configured maximum size: {self.max_file_size} bytes"
-            )
+            raise ValueError(f"File exceeds configured maximum size: {self.max_file_size} bytes")
 
         digest = hashlib.sha256()
 

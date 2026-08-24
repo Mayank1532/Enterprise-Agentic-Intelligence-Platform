@@ -44,9 +44,7 @@ class TextDocumentProcessor:
 
         chunks: list[DocumentChunk] = []
 
-        for index, start in enumerate(
-            range(0, len(normalized), self.chunk_size)
-        ):
+        for index, start in enumerate(range(0, len(normalized), self.chunk_size)):
             chunk_text = normalized[start : start + self.chunk_size]
 
             chunk_id = hashlib.sha256(
@@ -64,4 +62,3 @@ class TextDocumentProcessor:
             )
 
         return chunks
-

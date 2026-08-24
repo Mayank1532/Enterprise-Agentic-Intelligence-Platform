@@ -8,6 +8,7 @@ from enterprise_ai.common.document_ingestor import DocumentIngestor
 from enterprise_ai.common.document_processor import TextDocumentProcessor
 from enterprise_ai.common.file_processor import FileProcessor
 from enterprise_ai.common.processing_cache import ProcessingCache
+from enterprise_ai.core.document import DocumentRecord
 
 
 def create_ingestor(tmp_path: Path) -> DocumentIngestor:
@@ -23,7 +24,7 @@ def create_ingestor(tmp_path: Path) -> DocumentIngestor:
     return DocumentIngestor(processor)
 
 
-def create_document(tmp_path: Path):
+def create_document(tmp_path: Path) -> tuple[Path, DocumentRecord]:
     """Create a test document and its provenance record."""
     path = tmp_path / "document.txt"
     path.write_text(
@@ -51,9 +52,7 @@ def test_text_is_normalized(tmp_path: Path) -> None:
     """Whitespace normalization must be deterministic."""
     processor = TextDocumentProcessor()
 
-    result = processor.normalize(
-        "Enterprise   Agentic\n\nIntelligence   Platform"
-    )
+    result = processor.normalize("Enterprise   Agentic\n\nIntelligence   Platform")
 
     assert result == "Enterprise Agentic Intelligence Platform"
 
@@ -88,9 +87,7 @@ def test_same_document_produces_same_chunk_ids(tmp_path: Path) -> None:
     first = processor.chunk(document, text)
     second = processor.chunk(document, text)
 
-    assert [chunk.chunk_id for chunk in first] == [
-        chunk.chunk_id for chunk in second
-    ]
+    assert [chunk.chunk_id for chunk in first] == [chunk.chunk_id for chunk in second]
 
 
 def test_empty_document_produces_no_chunks(tmp_path: Path) -> None:

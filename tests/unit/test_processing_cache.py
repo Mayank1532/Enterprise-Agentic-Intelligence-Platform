@@ -1,9 +1,11 @@
 """Processing cache tests."""
 
+from pathlib import Path
+
 from enterprise_ai.common.processing_cache import ProcessingCache
 
 
-def test_same_content_produces_same_fingerprint(tmp_path) -> None:
+def test_same_content_produces_same_fingerprint(tmp_path: Path) -> None:
     """Identical content must produce an identical fingerprint."""
     cache = ProcessingCache(str(tmp_path / "cache.db"))
 
@@ -13,7 +15,9 @@ def test_same_content_produces_same_fingerprint(tmp_path) -> None:
     assert first == second
 
 
-def test_different_content_produces_different_fingerprint(tmp_path) -> None:
+def test_different_content_produces_different_fingerprint(
+    tmp_path: Path,
+) -> None:
     """Different content must produce different fingerprints."""
     cache = ProcessingCache(str(tmp_path / "cache.db"))
 
@@ -23,7 +27,7 @@ def test_different_content_produces_different_fingerprint(tmp_path) -> None:
     assert first != second
 
 
-def test_cached_result_is_reused(tmp_path) -> None:
+def test_cached_result_is_reused(tmp_path: Path) -> None:
     """A previously processed result must be reusable."""
     cache = ProcessingCache(str(tmp_path / "cache.db"))
 
@@ -36,7 +40,9 @@ def test_cached_result_is_reused(tmp_path) -> None:
     assert cache.get(content_hash) == "processed-result"
 
 
-def test_changed_content_requires_new_processing(tmp_path) -> None:
+def test_changed_content_requires_new_processing(
+    tmp_path: Path,
+) -> None:
     """Changed content must receive a different cache key."""
     cache = ProcessingCache(str(tmp_path / "cache.db"))
 
@@ -49,7 +55,9 @@ def test_changed_content_requires_new_processing(tmp_path) -> None:
     assert cache.get(changed) is None
 
 
-def test_cache_statistics_measure_hits_and_misses(tmp_path) -> None:
+def test_cache_statistics_measure_hits_and_misses(
+    tmp_path: Path,
+) -> None:
     """Cache statistics must measure avoided processing."""
     cache = ProcessingCache(str(tmp_path / "cache.db"))
 
@@ -70,7 +78,7 @@ def test_cache_statistics_measure_hits_and_misses(tmp_path) -> None:
     assert stats.hit_rate == 0.5
 
 
-def test_empty_cache_has_zero_hit_rate(tmp_path) -> None:
+def test_empty_cache_has_zero_hit_rate(tmp_path: Path) -> None:
     """An unused cache must report a zero hit rate."""
     cache = ProcessingCache(str(tmp_path / "cache.db"))
 
