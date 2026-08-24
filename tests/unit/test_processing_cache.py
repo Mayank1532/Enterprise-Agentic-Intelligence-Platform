@@ -47,3 +47,34 @@ def test_changed_content_requires_new_processing(tmp_path) -> None:
 
     assert cache.get(original) == "version-1-result"
     assert cache.get(changed) is None
+
+
+def test_cache_statistics_measure_hits_and_misses(tmp_path) -> None:
+    """Cache statistics must measure avoided processing."""
+    cache = ProcessingCache(str(tmp_path / "cache.db"))
+
+    content_hash = cache.fingerprint(b"document")
+
+    assert cache.get(content_hash) is None
+
+    cache.put(content_hash, "processed-result")
+
+    assert cache.get(content_hash) == "processed-result"
+
+    stats = cache.stats()
+
+    assert stats.hits == 1
+    assert stats.misses == 1
+    assert stats.stored == 1
+    assert stats.total_lookups == 2
+    assert stats.hit_rate == 0.5
+
+
+def test_empty_cache_has_zero_hit_rate(tmp_path) -> None:
+    """An unused cache must report a zero hit rate."""
+    cache = ProcessingCache(str(tmp_path / "cache.db"))
+
+    stats = cache.stats()
+
+    assert stats.total_lookups == 0
+    assert stats.hit_rate == 0.0
