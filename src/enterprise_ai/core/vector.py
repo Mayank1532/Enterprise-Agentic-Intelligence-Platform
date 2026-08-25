@@ -1,4 +1,4 @@
-"""Retrieval result representation."""
+"""Vector retrieval representation."""
 
 from dataclasses import dataclass
 
@@ -6,8 +6,8 @@ from enterprise_ai.core.retrieval import RetrievalRecord
 
 
 @dataclass(frozen=True, slots=True)
-class RetrievalResult:
-    """A retrieval record paired with a relevance score."""
+class VectorRecord:
+    """A retrieval record paired with an embedding vector."""
 
     record: RetrievalRecord
-    score: float
+    vector: tuple[float, ...]
