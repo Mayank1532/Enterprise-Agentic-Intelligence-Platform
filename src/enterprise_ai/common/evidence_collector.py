@@ -17,9 +17,6 @@ class EvidenceCollector:
         chunks: Iterable[DocumentChunk],
     ) -> tuple[EvidenceBlock, ...]:
         """Build evidence blocks while preserving chunk order."""
-        evidence = tuple(
-            EvidenceBuilder.build(document, chunk)
-            for chunk in chunks
-        )
+        evidence = tuple(EvidenceBuilder.build(document, chunk) for chunk in chunks)
 
         return evidence

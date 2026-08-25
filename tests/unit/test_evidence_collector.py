@@ -1,7 +1,7 @@
 """Tests for deterministic evidence collection."""
 
-from enterprise_ai.common.evidence_collector import EvidenceCollector
 from enterprise_ai.common.evidence_builder import EvidenceBuilder
+from enterprise_ai.common.evidence_collector import EvidenceCollector
 from enterprise_ai.core.chunk import DocumentChunk
 from enterprise_ai.core.document import DocumentRecord
 
@@ -62,10 +62,7 @@ def test_collect_matches_direct_builder() -> None:
     document, chunks = create_inputs()
 
     collected = EvidenceCollector().collect(document, chunks)
-    expected = tuple(
-        EvidenceBuilder.build(document, chunk)
-        for chunk in chunks
-    )
+    expected = tuple(EvidenceBuilder.build(document, chunk) for chunk in chunks)
 
     assert collected == expected
 
