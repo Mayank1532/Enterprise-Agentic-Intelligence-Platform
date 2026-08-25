@@ -38,3 +38,5 @@ data/index/
 data/cache/
 
 *.log
+data/raw/
+data/quarantine/
