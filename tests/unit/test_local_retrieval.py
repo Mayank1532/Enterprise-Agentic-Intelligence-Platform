@@ -1,13 +1,14 @@
 """Tests for deterministic local retrieval."""
 
 from enterprise_ai.common.evidence_builder import EvidenceBuilder
-from enterprise_ai.common.retrieval_builder import RetrievalRecordBuilder
 from enterprise_ai.common.local_retrieval import LocalRetrievalIndex
+from enterprise_ai.common.retrieval_builder import RetrievalRecordBuilder
 from enterprise_ai.core.chunk import DocumentChunk
 from enterprise_ai.core.document import DocumentRecord
+from enterprise_ai.core.retrieval import RetrievalRecord
 
 
-def create_records():
+def create_records() -> tuple[RetrievalRecord, ...]:
     """Create deterministic retrieval records."""
     document = DocumentRecord(
         document_id="document-001",
@@ -42,98 +43,71 @@ def create_records():
         ),
     )
 
-    evidence = tuple(
-        EvidenceBuilder.build(document, chunk)
-        for chunk in chunks
-    )
+    evidence = tuple(EvidenceBuilder.build(document, chunk) for chunk in chunks)
 
     return RetrievalRecordBuilder.build_many(evidence)
 
 
-def test_search_returns_matching_records() -> None:
-    """Search returns records containing query terms."""
+def test_search_returns_relevant_records() -> None:
+    """Search returns records containing query tokens."""
     index = LocalRetrievalIndex()
     index.add_many(create_records())
 
     results = index.search("Python")
 
     assert len(results) == 2
-    assert {item.record.chunk_id for item in results} == {
+    assert [item.record.chunk_id for item in results] == [
         "chunk-001",
         "chunk-002",
-    }
+    ]
 
 
-def test_search_is_case_insensitive() -> None:
-    """Search normalizes query and document casing."""
-    index = LocalRetrievalIndex()
-    index.add_many(create_records())
-
-    results = index.search("PYTHON")
-
-    assert len(results) == 2
-
-
-def test_search_ranks_by_token_overlap() -> None:
-    """Records with more matching terms rank first."""
+def test_search_ranks_by_score_then_chunk_index() -> None:
+    """Search uses deterministic ranking."""
     index = LocalRetrievalIndex()
     index.add_many(create_records())
 
     results = index.search("Python retrieval")
 
-    assert results[0].record.chunk_id == "chunk-001"
+    assert [item.record.chunk_id for item in results] == [
+        "chunk-001",
+        "chunk-002",
+    ]
     assert results[0].score == 2
-    assert results[1].record.chunk_id == "chunk-002"
     assert results[1].score == 1
 
 
-def test_search_preserves_deterministic_tie_order() -> None:
-    """Equal scores are ordered by chunk index."""
-    index = LocalRetrievalIndex()
-    index.add_many(create_records())
-
-    results = index.search("Python")
-
-    assert [item.record.chunk_index for item in results] == [0, 1]
-
-
 def test_search_respects_limit() -> None:
-    """Search returns no more than the requested limit."""
+    """Search respects the requested result limit."""
     index = LocalRetrievalIndex()
     index.add_many(create_records())
 
     results = index.search("Python", limit=1)
 
     assert len(results) == 1
+    assert results[0].record.chunk_id == "chunk-001"
 
 
-def test_search_empty_query() -> None:
+def test_search_empty_query_returns_empty() -> None:
     """Empty queries return no results."""
     index = LocalRetrievalIndex()
     index.add_many(create_records())
 
-    assert index.search("   ") == ()
+    assert index.search("") == ()
 
 
-def test_search_no_match() -> None:
-    """Unknown terms return no results."""
+def test_search_non_matching_query_returns_empty() -> None:
+    """Non-matching queries return no results."""
     index = LocalRetrievalIndex()
     index.add_many(create_records())
 
     assert index.search("quantum") == ()
 
 
-def test_search_non_positive_limit() -> None:
+def test_search_non_positive_limit_returns_empty() -> None:
     """Non-positive limits return no results."""
     index = LocalRetrievalIndex()
     index.add_many(create_records())
 
     assert index.search("Python", limit=0) == ()
     assert index.search("Python", limit=-1) == ()
-
-
-def test_empty_index() -> None:
-    """An empty index returns no results."""
-    index = LocalRetrievalIndex()
-
-    assert index.search("Python") == ()

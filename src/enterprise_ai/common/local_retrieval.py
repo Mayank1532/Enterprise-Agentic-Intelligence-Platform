@@ -4,6 +4,7 @@ import re
 from collections.abc import Iterable
 
 from enterprise_ai.core.retrieval import RetrievalRecord
+from enterprise_ai.core.retrieval_filter import RetrievalFilter
 from enterprise_ai.core.retrieval_result import RetrievalResult
 
 
@@ -23,6 +24,7 @@ class LocalRetrievalIndex:
         query: str,
         *,
         limit: int = 5,
+        metadata_filter: RetrievalFilter | None = None,
     ) -> tuple[RetrievalResult, ...]:
         """Return records ranked by deterministic token overlap."""
         if limit <= 0:
@@ -36,12 +38,17 @@ class LocalRetrievalIndex:
         results: list[RetrievalResult] = []
 
         for record in self._records:
+            if metadata_filter is not None and not metadata_filter.matches(
+                document_id=record.document_id,
+                source_path=record.source_path,
+                chunk_id=record.chunk_id,
+                chunk_index=record.chunk_index,
+            ):
+                continue
+
             document_tokens = self._tokenize(record.text)
-            score = sum(
-                1
-                for token in query_tokens
-                if token in document_tokens
-            )
+
+            score = sum(1 for token in query_tokens if token in document_tokens)
 
             if score > 0:
                 results.append(
@@ -64,6 +71,4 @@ class LocalRetrievalIndex:
     @staticmethod
     def _tokenize(text: str) -> frozenset[str]:
         """Normalize text into deterministic lowercase tokens."""
-        return frozenset(
-            re.findall(r"[a-z0-9]+", text.lower())
-        )
+        return frozenset(re.findall(r"[a-z0-9]+", text.lower()))
