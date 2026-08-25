@@ -16,15 +16,9 @@ class EvidenceBuilder:
         chunk: DocumentChunk,
     ) -> EvidenceBlock:
         """Create a deterministic evidence block."""
-        evidence_key = (
-            f"{document.document_id}:"
-            f"{chunk.chunk_id}:"
-            f"{chunk.text}"
-        )
+        evidence_key = f"{document.document_id}:{chunk.chunk_id}:{chunk.text}"
 
-        evidence_id = hashlib.sha256(
-            evidence_key.encode()
-        ).hexdigest()
+        evidence_id = hashlib.sha256(evidence_key.encode()).hexdigest()
 
         return EvidenceBlock(
             evidence_id=evidence_id,

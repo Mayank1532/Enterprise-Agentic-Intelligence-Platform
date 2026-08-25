@@ -48,9 +48,7 @@ def test_evidence_reference_is_stable() -> None:
 
     evidence = EvidenceBuilder.build(document, chunk)
 
-    assert evidence.reference() == (
-        f"{document.document_id}#{chunk.chunk_id}"
-    )
+    assert evidence.reference() == (f"{document.document_id}#{chunk.chunk_id}")
 
 
 def test_evidence_id_is_deterministic() -> None:

@@ -16,7 +16,4 @@ class EvidenceBlock:
 
     def reference(self) -> str:
         """Return a stable human-readable evidence reference."""
-        return (
-            f"{self.document_id}#"
-            f"{self.chunk_id}"
-        )
+        return f"{self.document_id}#{self.chunk_id}"
