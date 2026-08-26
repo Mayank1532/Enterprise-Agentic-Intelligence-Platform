@@ -52,7 +52,7 @@ class FakeSuccessfulResult:
 class FakeMCPClient:
     """Fake async MCP client used to isolate adapter behavior."""
 
-    result = FakeSuccessfulResult()
+    result: object = FakeSuccessfulResult()
     error: Exception | None = None
 
     def __init__(self) -> None:
