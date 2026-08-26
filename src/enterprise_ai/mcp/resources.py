@@ -2,7 +2,6 @@
 
 from mcp.server import MCPServer
 
-
 PLATFORM_STATUS_RESOURCE_URI = "platform://status"
 
 

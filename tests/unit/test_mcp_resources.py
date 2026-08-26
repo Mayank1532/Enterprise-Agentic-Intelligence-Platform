@@ -9,7 +9,6 @@ from enterprise_ai.mcp.server import (
     mcp_server,
 )
 
-
 EXPECTED_RESOURCE = "platform=enterprise-ai\nstatus=operational\nexecution_mode=deterministic"
 
 
