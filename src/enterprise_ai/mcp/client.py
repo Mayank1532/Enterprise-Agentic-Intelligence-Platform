@@ -41,7 +41,12 @@ class MCPPlatformClient:
     @property
     def protocol_version(self) -> str:
         """Return the negotiated MCP protocol version."""
-        return self._client.protocol_version
+        value = self._client.protocol_version
+
+        if not isinstance(value, str):
+            raise TypeError("MCP protocol version must be a string.")
+
+        return value
 
     async def list_tools(self) -> Any:
         """List tools exposed by the MCP server."""
