@@ -4,6 +4,9 @@ from typing import Any
 
 from mcp import Client
 
+from enterprise_ai.mcp.capability_policy import (
+    validate_tool_call,
+)
 from enterprise_ai.mcp.server import mcp_server
 
 
@@ -57,7 +60,12 @@ class MCPPlatformClient:
         name: str,
         arguments: dict[str, Any] | None = None,
     ) -> Any:
-        """Call an MCP tool."""
+        """Validate and call an explicitly allowed MCP capability."""
+        validate_tool_call(
+            name,
+            arguments,
+        )
+
         return await self._client.call_tool(
             name,
             arguments=arguments,
