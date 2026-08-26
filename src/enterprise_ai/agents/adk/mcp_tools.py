@@ -2,32 +2,36 @@
 
 from typing import Any
 
+from enterprise_ai.agents.adk.mcp_exceptions import (
+    MCPIntegrationError,
+)
 from enterprise_ai.mcp.client import MCPPlatformClient
 
 
 async def mcp_platform_status_tool() -> dict[str, Any]:
     """Return platform status through the MCP client boundary.
 
-    This function is intentionally async because the underlying MCP
-    protocol is asynchronous.
-
-    The ADK agent receives this function as a normal function tool.
-    The function itself knows nothing about the MCP server
-    implementation; it depends only on MCPPlatformClient.
+    MCP failures are deliberately converted into an explicit
+    integration error. No fallback value is returned because
+    doing so could cause the ADK layer to operate on fabricated
+    platform state.
     """
-    async with MCPPlatformClient() as client:
-        result = await client.call_tool(
-            "platform_status",
-            arguments={},
-        )
+    try:
+        async with MCPPlatformClient() as client:
+            result = await client.call_tool(
+                "platform_status",
+                arguments={},
+            )
+    except Exception as exc:
+        raise MCPIntegrationError("MCP platform status operation failed.") from exc
 
     if result.is_error:
-        raise RuntimeError("MCP platform_status tool returned an error.")
+        raise MCPIntegrationError("MCP platform status tool returned an error.")
 
     if result.structured_content is None:
-        raise RuntimeError("MCP platform_status tool returned no structured content.")
+        raise MCPIntegrationError("MCP platform status tool returned no structured content.")
 
     if not isinstance(result.structured_content, dict):
-        raise TypeError("MCP platform_status tool must return a dictionary.")
+        raise TypeError("MCP platform status tool must return a dictionary.")
 
     return result.structured_content
