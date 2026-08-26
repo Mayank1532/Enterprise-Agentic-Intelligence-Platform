@@ -2,7 +2,6 @@
 
 from mcp.server import MCPServer
 
-
 PLATFORM_ANALYSIS_PROMPT_NAME = "platform_analysis"
 
 

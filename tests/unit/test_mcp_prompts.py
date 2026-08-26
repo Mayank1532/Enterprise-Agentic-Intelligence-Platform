@@ -11,7 +11,6 @@ from enterprise_ai.mcp.server import (
     mcp_server,
 )
 
-
 EXPECTED_TOPIC = "MCP architecture"
 
 EXPECTED_PROMPT = (
