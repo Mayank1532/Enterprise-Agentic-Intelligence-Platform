@@ -5,6 +5,7 @@ description = "Provider-neutral, evidence-first enterprise agentic intelligence 
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "fastapi>=0.116.0,<1.0.0",
+    "google-adk>=2.7.1",
     "pydantic>=2.11.0,<3.0.0",
     "pydantic-settings>=2.10.0,<3.0.0",
     "uvicorn[standard]>=0.35.0,<1.0.0",
