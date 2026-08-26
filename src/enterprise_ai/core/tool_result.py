@@ -1,10 +1,8 @@
 """ADK tool result representation."""
 
 from dataclasses import dataclass
-from typing import TypeAlias
 
-
-JSONPrimitive: TypeAlias = str | int | float | bool | None
+type JSONPrimitive = str | int | float | bool | None
 
 
 @dataclass(frozen=True, slots=True)
@@ -29,7 +27,7 @@ class RetrievalToolResponse:
     has_evidence: bool
 
 
-ToolResult: TypeAlias = dict[
+type ToolResult = dict[
     str,
     JSONPrimitive | list[dict[str, JSONPrimitive]],
 ]
