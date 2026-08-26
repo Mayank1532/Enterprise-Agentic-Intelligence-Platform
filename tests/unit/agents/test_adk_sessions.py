@@ -1,7 +1,6 @@
 """ADK session integration smoke tests."""
 
 import pytest
-
 from google.adk.sessions import InMemorySessionService
 
 from enterprise_ai.agents.adk.session_manager import (
