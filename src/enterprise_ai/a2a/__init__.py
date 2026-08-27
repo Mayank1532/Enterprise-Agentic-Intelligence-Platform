@@ -1,1 +1,7 @@
-"""A2A protocol integration for the Enterprise Agentic Intelligence Platform."""
+"""A2A protocol boundary."""
+
+from enterprise_ai.a2a.executor import EnterpriseA2AExecutor
+
+__all__ = [
+    "EnterpriseA2AExecutor",
+]
