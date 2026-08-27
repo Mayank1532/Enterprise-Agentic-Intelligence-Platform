@@ -4,10 +4,18 @@ from collections.abc import AsyncIterator, Awaitable, Callable
 from contextlib import asynccontextmanager
 from uuid import uuid4
 
+from a2a.server.request_handlers import DefaultRequestHandlerV2
+from a2a.server.routes import (
+    add_a2a_routes_to_fastapi,
+    create_jsonrpc_routes,
+)
+from a2a.server.tasks import InMemoryTaskStore
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 
+from enterprise_ai.a2a.agent_card import get_agent_card
 from enterprise_ai.a2a.discovery import router as a2a_router
+from enterprise_ai.a2a.executor import EnterpriseA2AExecutor
 from enterprise_ai.config.settings import get_settings
 from enterprise_ai.core.errors import APIError
 from enterprise_ai.core.health import HealthResponse, ReadinessResponse
@@ -37,6 +45,21 @@ app = FastAPI(
 
 app.include_router(a2a_router)
 
+_a2a_handler = DefaultRequestHandlerV2(
+    agent_executor=EnterpriseA2AExecutor(),
+    task_store=InMemoryTaskStore(),
+    agent_card=get_agent_card(),
+)
+
+_a2a_jsonrpc_routes = create_jsonrpc_routes(
+    _a2a_handler,
+    rpc_url="/a2a",
+)
+
+add_a2a_routes_to_fastapi(
+    app,
+    jsonrpc_routes=_a2a_jsonrpc_routes,
+)
 
 
 @app.middleware("http")
