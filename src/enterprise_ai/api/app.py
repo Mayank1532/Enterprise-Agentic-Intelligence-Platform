@@ -7,6 +7,7 @@ from uuid import uuid4
 from fastapi import FastAPI, Request, Response
 from fastapi.responses import JSONResponse
 
+from enterprise_ai.a2a.discovery import router as a2a_router
 from enterprise_ai.config.settings import get_settings
 from enterprise_ai.core.errors import APIError
 from enterprise_ai.core.health import HealthResponse, ReadinessResponse
@@ -26,12 +27,16 @@ async def lifespan(_: FastAPI) -> AsyncIterator[None]:
     logger.info("Stopping %s", settings.app_name)
 
 
+
 app = FastAPI(
     title="Enterprise Agentic Intelligence Platform",
     description="Provider-neutral, evidence-first Agentic AI platform.",
     version="0.1.0",
     lifespan=lifespan,
 )
+
+app.include_router(a2a_router)
+
 
 
 @app.middleware("http")
@@ -94,3 +99,4 @@ def readiness() -> ReadinessResponse:
         status="ready",
         environment=settings.app_env,
     )
+
