@@ -98,3 +98,68 @@ async def test_a2a_endpoint_rejects_unknown_method() -> None:
     assert body["jsonrpc"] == "2.0"
     assert body["id"] == "test-request-unknown"
     assert "error" in body
+
+
+@pytest.mark.anyio
+async def test_a2a_endpoint_rejects_unsupported_protocol_version() -> None:
+    """Unsupported A2A protocol versions return a protocol error."""
+    payload = {
+        "jsonrpc": "2.0",
+        "id": "test-request-version",
+        "method": "SendMessage",
+        "params": {},
+    }
+
+    transport = ASGITransport(app=app)
+
+    async with AsyncClient(
+        transport=transport,
+        base_url="http://testserver",
+    ) as client:
+        response = await client.post(
+            "/a2a",
+            headers={
+                "A2A-Version": "0.3",
+            },
+            json=payload,
+        )
+
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert body["jsonrpc"] == "2.0"
+    assert body["id"] == "test-request-version"
+    assert "error" in body
+
+
+@pytest.mark.anyio
+async def test_a2a_endpoint_rejects_malformed_jsonrpc_request() -> None:
+    """Malformed JSON-RPC requests return a protocol error."""
+    payload = {
+        "jsonrpc": "2.0",
+        "id": "test-request-malformed",
+        "params": {},
+    }
+
+    transport = ASGITransport(app=app)
+
+    async with AsyncClient(
+        transport=transport,
+        base_url="http://testserver",
+    ) as client:
+        response = await client.post(
+            "/a2a",
+            headers={
+                "A2A-Version": "1.0",
+            },
+            json=payload,
+        )
+
+    assert response.status_code == 200
+
+    body = response.json()
+
+    assert body["jsonrpc"] == "2.0"
+    assert body["id"] == "test-request-malformed"
+    assert "error" in body
