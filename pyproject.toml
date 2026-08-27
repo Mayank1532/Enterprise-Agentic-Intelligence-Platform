@@ -4,6 +4,7 @@ version = "0.1.0"
 description = "Provider-neutral, evidence-first enterprise agentic intelligence platform"
 requires-python = ">=3.12,<3.13"
 dependencies = [
+    "a2a-sdk>=1.1.2",
     "fastapi>=0.116.0,<1.0.0",
     "google-adk>=2.7.1",
     "mcp>=2.1.1",
