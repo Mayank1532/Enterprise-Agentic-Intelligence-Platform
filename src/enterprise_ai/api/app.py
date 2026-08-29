@@ -8,6 +8,7 @@ from a2a.server.request_handlers import DefaultRequestHandlerV2
 from a2a.server.routes import (
     add_a2a_routes_to_fastapi,
     create_jsonrpc_routes,
+    create_rest_routes,
 )
 from a2a.server.tasks import InMemoryTaskStore
 from fastapi import FastAPI, Request, Response
@@ -56,9 +57,15 @@ _a2a_jsonrpc_routes = create_jsonrpc_routes(
     rpc_url="/a2a",
 )
 
+_a2a_rest_routes = create_rest_routes(
+    _a2a_handler,
+    path_prefix="/a2a",
+)
+
 add_a2a_routes_to_fastapi(
     app,
     jsonrpc_routes=_a2a_jsonrpc_routes,
+    rest_routes=_a2a_rest_routes,
 )
 
 
@@ -122,4 +129,3 @@ def readiness() -> ReadinessResponse:
         status="ready",
         environment=settings.app_env,
     )
-
