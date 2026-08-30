@@ -40,7 +40,6 @@ class LiveData(BaseModel):
             query=query,
             value=value,
             source_name=source_name,
-            source_url=source_url,
+            source_url=HttpUrl(source_url),
             retrieved_at=datetime.now(UTC),
         )
-

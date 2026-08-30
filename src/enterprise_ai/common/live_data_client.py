@@ -31,7 +31,7 @@ class PublicLiveDataProvider:
 
         coordinates = self._resolve_location(location)
 
-        params = {
+        params: dict[str, str | float] = {
             "latitude": coordinates["latitude"],
             "longitude": coordinates["longitude"],
             "current": "temperature_2m",
