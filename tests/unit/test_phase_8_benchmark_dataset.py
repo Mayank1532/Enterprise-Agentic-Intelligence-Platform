@@ -1,6 +1,6 @@
 """Tests for the canonical Phase 8 benchmark dataset."""
 
-from tests.unit.phase_8_benchmark_dataset import PHASE_8_BENCHMARK
+from phase_8_benchmark_dataset import PHASE_8_BENCHMARK
 
 
 def test_phase_8_benchmark_is_deterministic() -> None:
@@ -22,3 +22,4 @@ def test_phase_8_benchmark_case_ids_are_stable() -> None:
         "routing-004",
         "routing-005",
     )
+

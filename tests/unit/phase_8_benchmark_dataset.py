@@ -2,7 +2,6 @@
 
 from enterprise_ai.core.benchmark import BenchmarkCase, BenchmarkDataset
 
-
 PHASE_8_BENCHMARK = BenchmarkDataset(
     name="enterprise-agentic-intelligence-platform",
     version="1.0",
