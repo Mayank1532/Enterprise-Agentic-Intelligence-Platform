@@ -31,7 +31,9 @@ def _build_executor() -> ParallelBatchExecutor:
     """Build a parallel executor with a deterministic processor."""
     engine = IncrementalIngestionEngine()
 
-    processor = lambda document_id: None
+    def processor(_: str) -> None:
+        """Provide a deterministic no-op processor."""
+        return None
 
     batch_executor = BatchIngestionExecutor(
         engine=engine,
