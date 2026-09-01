@@ -54,6 +54,23 @@ class Settings(BaseSettings):
         validation_alias="LLM_API_KEY",
     )
 
+    api_auth_enabled: bool = Field(
+        default=False,
+        validation_alias="API_AUTH_ENABLED",
+    )
+    api_auth_key: str = Field(
+        default="",
+        validation_alias="API_AUTH_KEY",
+    )
+    api_rate_limit_requests: int = Field(
+        default=60,
+        validation_alias="API_RATE_LIMIT_REQUESTS",
+    )
+    api_rate_limit_window_seconds: int = Field(
+        default=60,
+        validation_alias="API_RATE_LIMIT_WINDOW_SECONDS",
+    )
+
 
 @lru_cache(maxsize=1)
 def get_settings() -> Settings:

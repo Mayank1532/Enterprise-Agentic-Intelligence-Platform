@@ -17,6 +17,7 @@ from fastapi.responses import JSONResponse
 from enterprise_ai.a2a.agent_card import get_agent_card
 from enterprise_ai.a2a.discovery import router as a2a_router
 from enterprise_ai.a2a.executor import EnterpriseA2AExecutor
+from enterprise_ai.api.security import authenticate_request, enforce_rate_limit
 from enterprise_ai.config.settings import get_settings
 from enterprise_ai.core.errors import APIError
 from enterprise_ai.core.health import HealthResponse, ReadinessResponse
@@ -84,6 +85,19 @@ async def request_id_middleware(
 
     return response
 
+
+@app.middleware("http")
+async def security_middleware(
+    request: Request,
+    call_next: Callable[[Request], Awaitable[Response]],
+) -> Response:
+    """Apply API authentication and rate limiting."""
+    if request.url.path not in {"/health", "/ready"}:
+        authenticate_request(request)
+
+    enforce_rate_limit(request)
+
+    return await call_next(request)
 
 @app.exception_handler(Exception)
 async def unhandled_exception_handler(
